@@ -1,9 +1,18 @@
-from rest_framework.generics import ListAPIView
+from datetime import datetime, timedelta
+from rest_framework.generics import ListAPIView, ListCreateAPIView
 from rest_framework.response import Response
 from rest_framework import viewsets
 
-from todo_app.models import Dashboard, Task
-from .serializers import TaskSerializer, DashboardSerializer, TaskEditSerializer, DashboardDetailSerializer
+from todo_app.models import Dashboard, Task, Reminder
+from .serializers import (
+    TaskSerializer,
+    DashboardSerializer,
+    TaskEditSerializer,
+    DashboardDetailSerializer,
+    ReminderSerializer
+)
+
+from todo_app.tasks import send_reminder
 
 
 class DashboardListAPIView(ListAPIView):
@@ -45,3 +54,21 @@ class TaskViewSet(viewsets.ModelViewSet):
         queryset = Task.objects.all()
         serializer = TaskEditSerializer(queryset, many=True, context={'request': request})
         return Response(serializer.data)
+
+
+class RemindersListCreateAPIView(ListCreateAPIView):
+    queryset = Reminder.objects.all()
+    serializer_class = ReminderSerializer
+
+    def post(self, request, *args, **kwargs):
+        print request.data['remind_about'], request.data['delay']
+        execute_at = datetime.utcnow() + timedelta(seconds=int(request.data['delay']))
+        send_reminder.apply_async((request.data['remind_about'],), eta=execute_at)
+        return self.create(request, *args, **kwargs)
+
+
+class ReminderViewSet(viewsets.ModelViewSet):
+    queryset = Reminder.objects.all()
+    serializer_class = ReminderSerializer
+
+

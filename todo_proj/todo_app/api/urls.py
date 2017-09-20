@@ -8,6 +8,8 @@ from .views import (
     TaskListAPIView,
     ActiveTaskListAPIView,
     TaskViewSet,
+    RemindersListCreateAPIView,
+    ReminderViewSet,
 )
 
 
@@ -23,4 +25,7 @@ urlpatterns = [
                                                       'put': 'update',
                                                       'delete': 'destroy'}), name='task-detail'),
 
+    url(r'^reminders/', RemindersListCreateAPIView.as_view(), name='reminders-detail'),
+    url(r'^reminders/(?P<pk>\d+)/$', ReminderViewSet.as_view({'get': 'retrieve',
+                                                              'delete': 'destroy'}), name='reminders-detail'),
 ]

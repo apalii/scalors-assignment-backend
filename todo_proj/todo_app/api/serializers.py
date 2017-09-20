@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer, HyperlinkedIdentityField
 
-from todo_app.models import Dashboard, Task
+from todo_app.models import Dashboard, Task, Reminder
 
 
 class DashboardSerializer(ModelSerializer):
@@ -40,4 +40,13 @@ class TaskEditSerializer(ModelSerializer):
         fields = [
             'task',
             'is_done',
+        ]
+
+
+class ReminderSerializer(ModelSerializer):
+    class Meta:
+        model = Reminder
+        fields = [
+            'remind_about',
+            'delay',
         ]

@@ -34,4 +34,9 @@ class Task(models.Model):
 
 
 class Reminder(models.Model):
-    pass
+    remind_about = models.CharField(max_length=300)
+    delay = models.PositiveIntegerField()
+
+    def __str__(self):
+        return "{} : {}".format(self.remind_about, self.delay)
+
